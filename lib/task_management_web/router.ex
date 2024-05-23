@@ -24,9 +24,19 @@ defmodule TaskManagementWeb.Router do
 
   scope "/api", TaskManagementWeb do
     pipe_through :api
-    resources "/users", UserController, except: [:new, :edit]
-    resources "/tasks", TaskController, except: [:new, :edit]
+    # resources "/users", UserController, except: [:new, :edit]
+    # resources "/tasks", TaskController, except: [:new, :edit]
+
+    post "/users", UserController, :create
+    post "/tasks", TaskController, :create
+    get  "/tasks/:user_id", TaskController, :index
+
+    get "/tasks/:id", TaskController, :show
+    put "/tasks/:id", TaskController, :update
+    delete "/tasks/:id", TaskController, :delete
+
     resources "/task_status_tracks", TaskStatusTrackController, except: [:new, :edit]
+    get "/tasks/:task_id/status_tracks", TaskStatusTrackController, :index
   end
 
   # Enable LiveDashboard and Swoosh mailbox preview in development

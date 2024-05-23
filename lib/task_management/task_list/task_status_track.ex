@@ -5,7 +5,7 @@ defmodule TaskManagement.TaskList.TaskStatusTrack do
   schema "task_status_tracks" do
     field :status_change, :string
     field :changed_datetime, :naive_datetime
-    field :task_id, :integer
+    belongs_to :task, Task
 
     timestamps(type: :utc_datetime)
   end

@@ -9,5 +9,6 @@ defmodule TaskManagement.Repo.Migrations.CreateTaskStatusTracks do
 
       timestamps(type: :utc_datetime)
     end
+    create index(:tasks, [:task_id])
   end
 end

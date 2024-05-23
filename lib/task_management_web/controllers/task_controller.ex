@@ -11,8 +11,7 @@ defmodule TaskManagementWeb.TaskController do
     render(conn, :index, tasks: tasks)
   end
 
-  def create(conn, %{"user_id" => user_id, "task" => task_params}) do
-    task_params = Map.put(task_params, "user_id", user_id)
+  def create(conn, %{"task" => task_params}) do
 
     case TaskList.create_task(task_params) do
       {:ok, task} ->
@@ -27,13 +26,13 @@ defmodule TaskManagementWeb.TaskController do
     end
   end
 
-  def show(conn, %{"user_id" => user_id, "task_id" => task_id}) do
-    task = TaskList.get_task!(user_id, task_id)
+  def show(conn, %{"id" => id}) do
+    task = TaskList.get_task!(id)
     render(conn, "show.json", task: task)
   end
 
-  def update(conn, %{"user_id" => user_id, "task_id" => task_id, "task" => task_params}) do
-    task = TaskList.get_task!(user_id, task_id)
+  def update(conn, %{"id" => id, "task" => task_params}) do
+    task = TaskList.get_task!(id)
 
     case TaskList.update_task(task, task_params) do
       {:ok, task} ->
@@ -45,8 +44,8 @@ defmodule TaskManagementWeb.TaskController do
     end
   end
 
-  def delete(conn, %{"user_id" => user_id, "task_id" => task_id}) do
-    task = TaskList.get_task!(user_id, task_id)
+  def delete(conn, %{"id" => id}) do
+    task = TaskList.get_task!(id)
     with {:ok, %Task{}} <- TaskList.delete_task(task) do
       send_resp(conn, :no_content, "")
     end

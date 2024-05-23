@@ -7,7 +7,7 @@ defmodule TaskManagement.TaskList do
   alias TaskManagement.Repo
   # alias TaskManagement.Account.User
 
-  alias TaskManagement.TaskList.Task
+  alias TaskManagement.TaskList.{Task, TaskStatusTrack}
 
   @doc """
   Returns the list of tasks.
@@ -41,12 +41,7 @@ defmodule TaskManagement.TaskList do
       ** (Ecto.NoResultsError)
 
   """
-  # def get_task!(id), do: Repo.get!(Task, id)
-
-  def get_task!(user_id, task_id) do
-    Repo.get_by!(Task, task_id: task_id, user_id: user_id)
-  end
-
+  def get_task!(id), do: Repo.get!(Task, id)
 
   @doc """
   Creates a task.
@@ -60,13 +55,19 @@ defmodule TaskManagement.TaskList do
       {:error, %Ecto.Changeset{}}
 
   """
+
   def create_task(attrs \\ %{}) do
     %Task{}
     |> Task.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, task} ->
+        status_track_for_task(task)
+        {:ok, task}
+
+      error -> error
+    end
   end
-
-
 
   @doc """
   Updates a task.
@@ -84,6 +85,13 @@ defmodule TaskManagement.TaskList do
     task
     |> Task.changeset(attrs)
     |> Repo.update()
+    |> case do
+      {:ok, task} ->
+        status_track_for_task(task)
+        {:ok, task}
+
+      error -> error
+    end
   end
 
   @doc """
@@ -126,8 +134,23 @@ defmodule TaskManagement.TaskList do
       [%TaskStatusTrack{}, ...]
 
   """
-  def list_task_status_tracks do
-    Repo.all(TaskStatusTrack)
+  # def list_task_status_tracks do
+  #   Repo.all(TaskStatusTrack)
+  # end
+
+  def list_task_status_tracks(task_id) do
+    from(tst in TaskStatusTrack, where: tst.task_id == ^task_id)
+    |> Repo.all()
+  end
+
+  defp status_track_for_task(%Task{id: task_id, status: status_change}) do
+    %TaskStatusTrack{
+      status_change: status_change,
+      changed_datetime: NaiveDateTime.utc_now(),
+      task_id: task_id
+    }
+    |> TaskStatusTrack.changeset(%{})
+    |> Repo.insert()
   end
 
   @doc """

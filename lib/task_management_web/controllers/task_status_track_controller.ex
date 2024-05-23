@@ -6,9 +6,10 @@ defmodule TaskManagementWeb.TaskStatusTrackController do
 
   action_fallback TaskManagementWeb.FallbackController
 
-  def index(conn, _params) do
-    task_status_tracks = TaskList.list_task_status_tracks()
-    render(conn, :index, task_status_tracks: task_status_tracks)
+
+  def index(conn, %{"task_id" => task_id}) do
+    status_tracks = TaskList.list_task_status_tracks(task_id)
+    render(conn, "index.json", status_tracks: status_tracks)
   end
 
   def create(conn, %{"task_status_track" => task_status_track_params}) do

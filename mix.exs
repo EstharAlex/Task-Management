@@ -19,7 +19,7 @@ defmodule TaskManagement.MixProject do
   def application do
     [
       mod: {TaskManagement.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :observer]
     ]
   end
 
