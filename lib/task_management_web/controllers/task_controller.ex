@@ -18,17 +18,11 @@ defmodule TaskManagementWeb.TaskController do
   end
 
   def create(conn, %{"task" => task_params}) do
-
-    case TaskList.create_task(task_params) do
-      {:ok, task} ->
-        conn
-        |> put_status(:created)
-        |> put_resp_header("location", ~p"/api/tasks/#{task}")
-        |> render("show.json", task: task)
-      {:error, %Ecto.Changeset{} = changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render("error.json", changeset: changeset)
+    with {:ok, %Task{} = task} <- TaskList.create_task(task_params) do
+      conn
+      |> put_status(:created)
+      |> put_resp_header("location", ~p"/api/tasks/#{task}")
+      |> render(:show, task: task)
     end
   end
 
@@ -40,13 +34,8 @@ defmodule TaskManagementWeb.TaskController do
   def update(conn, %{"id" => id, "task" => task_params}) do
     task = TaskList.get_task!(id)
 
-    case TaskList.update_task(task, task_params) do
-      {:ok, task} ->
-        render(conn, "show.json", task: task)
-      {:error, %Ecto.Changeset{} = changeset} ->
-        conn
-        |> put_status(:unprocessable_entity)
-        |> render("error.json", changeset: changeset)
+    with {:ok, %Task{} = task} <- TaskList.update_task(task, task_params) do
+      render(conn, :show, task: task)
     end
   end
 

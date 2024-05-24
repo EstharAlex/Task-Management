@@ -2,17 +2,18 @@ defmodule TaskManagement.TaskListTest do
   use TaskManagement.DataCase
 
   alias TaskManagement.TaskList
+  import TaskManagement.AccountFixtures
 
   describe "tasks" do
     alias TaskManagement.TaskList.Task
 
     import TaskManagement.TaskListFixtures
-    import TaskManagement.AccountFixtures
 
     @invalid_attrs %{status: nil, description: nil, title: nil, due_date: nil}
 
     test "list_tasks/0 returns all tasks" do
-      task = task_fixture()
+      user = user_fixture()
+      task = task_fixture(%{user_id: user.id})
       assert TaskList.list_tasks() == [task]
     end
 
@@ -23,19 +24,21 @@ defmodule TaskManagement.TaskListTest do
     end
 
     test "get_task!/1 returns the task with given id" do
-      task = task_fixture()
+      user = user_fixture()
+      task = task_fixture(%{user_id: user.id})
       assert TaskList.get_task!(task.id) == task
     end
 
     test "create_task/1 with valid data creates a task" do
-      valid_attrs = %{status: "some status", description: "some description", title: "some title", due_date: ~D[2024-05-22], user_id: 1}
+      user = user_fixture()
+      valid_attrs = %{status: "TO DO", description: "some description", title: "some title", due_date: ~D[2024-05-22], user_id: user.id}
 
         assert {:ok, %Task{} = task} = TaskList.create_task(valid_attrs)
-        assert task.status == "some status"
+        assert task.status == "TO DO"
         assert task.description == "some description"
         assert task.title == "some title"
         assert task.due_date == ~D[2024-05-22]
-        assert task.user_id == 1
+        assert task.user_id == user.id
 
       assert TaskList.get_task!(task.id) == task
     end
@@ -45,33 +48,37 @@ defmodule TaskManagement.TaskListTest do
     end
 
     test "update_task/2 with valid data updates the task" do
-      task = task_fixture()
-      update_attrs = %{status: "some updated status", description: "some updated description", title: "some updated title", due_date: ~D[2024-05-23], user_id: 1}
+      user = user_fixture()
+      task = task_fixture(%{user_id: user.id})
+      update_attrs = %{status: "DONE", description: "some updated description", title: "some updated title", due_date: ~D[2024-05-23], user_id: user.id}
 
       assert {:ok, %Task{} = task} = TaskList.update_task(task, update_attrs)
-      assert task.status == "some updated status"
+      assert task.status == "DONE"
       assert task.description == "some updated description"
       assert task.title == "some updated title"
       assert task.due_date == ~D[2024-05-23]
-      assert task.user_id == 1
+      assert task.user_id == user.id
 
       assert TaskList.get_task!(task.id) == task
     end
 
     test "update_task/2 with invalid data returns error changeset" do
-      task = task_fixture()
+      user = user_fixture()
+      task = task_fixture(%{user_id: user.id})
       assert {:error, %Ecto.Changeset{}} = TaskList.update_task(task, @invalid_attrs)
       assert task == TaskList.get_task!(task.id)
     end
 
     test "delete_task/1 deletes the task" do
-      task = task_fixture()
+      user = user_fixture()
+      task = task_fixture(%{user_id: user.id})
       assert {:ok, %Task{}} = TaskList.delete_task(task)
       assert_raise Ecto.NoResultsError, fn -> TaskList.get_task!(task.id) end
     end
 
     test "change_task/1 returns a task changeset" do
-      task = task_fixture()
+      user = user_fixture()
+      task = task_fixture(%{user_id: user.id})
       assert %Ecto.Changeset{} = TaskList.change_task(task)
     end
   end
@@ -82,21 +89,24 @@ defmodule TaskManagement.TaskListTest do
     import TaskManagement.TaskListFixtures
 
     test "add_new_tasks_for_user/2  inserting or adding task using ets" do
-      task = task_fixture()
-      assert TaskEts.add_new_tasks_for_user(task.user_id, task.id) == task
-      assert TaskEts.get_tasks_for_user(task.user_id)
+      user = user_fixture()
+      task = task_fixture(%{user_id: user.id})
+      TaskEts.add_new_tasks_for_user(task.user_id, task)
+      assert TaskEts.get_tasks_for_user(task.user_id) == [task]
     end
 
     test "update_tasks_for_user/2  updating task using ets" do
-      task = task_fixture()
-      assert TaskEts.update_tasks_for_user(task.user_id, task.id) == task
-      assert TaskEts.get_tasks_for_user(task.user_id)
+      user = user_fixture()
+      task = task_fixture(%{user_id: user.id})
+      TaskEts.update_tasks_for_user(task.user_id, task)
+      assert TaskEts.get_tasks_for_user(task.user_id) == [task]
     end
 
     test "delete_tasks_for_user/2  deleting task using ets" do
-      task = task_fixture()
-      assert TaskEts.delete_task_for_user(task.user_id, task.id) == task
-      assert TaskEts.get_tasks_for_user(task.user_id)
+      user = user_fixture()
+      task = task_fixture(%{user_id: user.id})
+      TaskEts.delete_task_for_user(task.user_id, task.id)
+      assert TaskEts.get_tasks_for_user(task.user_id) == []
     end
   end
 
@@ -162,4 +172,5 @@ defmodule TaskManagement.TaskListTest do
       assert %Ecto.Changeset{} = TaskList.change_task_status_track(task_status_track)
     end
   end
+
 end

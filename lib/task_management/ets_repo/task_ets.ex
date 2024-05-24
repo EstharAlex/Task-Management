@@ -35,7 +35,7 @@ defmodule TaskManagement.EtsRepo.TaskEts do
   # Function to add new task for a user from ETS
  def add_new_tasks_for_user(user_id, task) do
    tasks = get_tasks_for_user(user_id)
-   new_list = [task | tasks]
+   new_list = [task | tasks] |> Enum.uniq()
    :ets.insert(__MODULE__, {user_id, new_list})
  end
 

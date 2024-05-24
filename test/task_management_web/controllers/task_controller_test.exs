@@ -2,22 +2,22 @@ defmodule TaskManagementWeb.TaskControllerTest do
   use TaskManagementWeb.ConnCase
 
   import TaskManagement.TaskListFixtures
+  import TaskManagement.AccountFixtures
 
   alias TaskManagement.TaskList.Task
 
   @create_attrs %{
-    status: "some status",
+    status: "TO DO",
     description: "some description",
     title: "some title",
     due_date: ~D[2024-05-22],
     user_id: 1
   }
   @update_attrs %{
-    status: "some updated status",
+    status: "DONE",
     description: "some updated description",
     title: "some updated title",
-    due_date: ~D[2024-05-23],
-    user_id: 1
+    due_date: ~D[2024-05-23]
   }
   @invalid_attrs %{status: nil, description: nil, title: nil, due_date: nil}
 
@@ -34,7 +34,10 @@ defmodule TaskManagementWeb.TaskControllerTest do
 
   describe "create task" do
     test "renders task when data is valid", %{conn: conn} do
-      conn = post(conn, ~p"/api/tasks", task: @create_attrs)
+      user = user_fixture()
+      user_id = user.id
+      task_attrs = Map.put(@create_attrs, :user_id, user.id)
+      conn = post(conn, ~p"/api/tasks", task: task_attrs)
       assert %{"id" => id} = json_response(conn, 201)["data"]
 
       conn = get(conn, ~p"/api/tasks/#{id}")
@@ -43,9 +46,9 @@ defmodule TaskManagementWeb.TaskControllerTest do
                "id" => ^id,
                "description" => "some description",
                "due_date" => "2024-05-22",
-               "status" => "some status",
+               "status" => "TO DO",
                "title" => "some title",
-               "user_id" => 1
+               "user_id" => ^user_id
              } = json_response(conn, 200)["data"]
     end
 
@@ -68,9 +71,8 @@ defmodule TaskManagementWeb.TaskControllerTest do
                "id" => ^id,
                "description" => "some updated description",
                "due_date" => "2024-05-23",
-               "status" => "some updated status",
-               "title" => "some updated title",
-               "user_id" => 1
+               "status" => "DONE",
+               "title" => "some updated title"
              } = json_response(conn, 200)["data"]
     end
 
@@ -94,7 +96,8 @@ defmodule TaskManagementWeb.TaskControllerTest do
   end
 
   defp create_task(_) do
-    task = task_fixture()
+    user = user_fixture()
+    task = task_fixture(%{user_id: user.id})
 
     %{task: task}
   end

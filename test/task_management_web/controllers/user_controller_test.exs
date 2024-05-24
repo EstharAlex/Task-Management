@@ -35,7 +35,6 @@ defmodule TaskManagementWeb.UserControllerTest do
 
       assert %{
                "id" => ^id,
-               "password" => "some password",
                "username" => "some username"
              } = json_response(conn, 200)["data"]
     end
@@ -57,7 +56,6 @@ defmodule TaskManagementWeb.UserControllerTest do
 
       assert %{
                "id" => ^id,
-               "password" => "some updated password",
                "username" => "some updated username"
              } = json_response(conn, 200)["data"]
     end

@@ -17,5 +17,6 @@ defmodule TaskManagement.AccountFixtures do
       |> TaskManagement.Account.create_user()
 
     user
+    |> Map.put(:password, nil)
   end
 end
