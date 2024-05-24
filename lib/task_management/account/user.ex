@@ -15,7 +15,7 @@ defmodule TaskManagement.Account.User do
   @doc false
   def changeset(user, attrs) do
     user
-    |> cast(attrs, [:username, :password])
+    |> cast(attrs, [:username, :password, :password_hash])
     |> validate_required([:username, :password])
     |> unique_constraint(:username)
     |> hash_password()

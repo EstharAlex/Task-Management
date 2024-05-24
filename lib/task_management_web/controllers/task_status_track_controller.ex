@@ -6,10 +6,14 @@ defmodule TaskManagementWeb.TaskStatusTrackController do
 
   action_fallback TaskManagementWeb.FallbackController
 
+  def list(conn, _params) do
+    status_tracks = TaskList.list_task_status_tracks()
+    render(conn, "index.json", task_status_tracks: status_tracks)
+  end
 
   def index(conn, %{"task_id" => task_id}) do
-    status_tracks = TaskList.list_task_status_tracks(task_id)
-    render(conn, "index.json", status_tracks: status_tracks)
+    status_tracks = TaskList.list_task_status_track(task_id)
+    render(conn, "index.json", task_status_tracks: status_tracks)
   end
 
   def create(conn, %{"task_status_track" => task_status_track_params}) do

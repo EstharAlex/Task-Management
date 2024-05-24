@@ -1,13 +1,19 @@
 defmodule TaskManagementWeb.TaskController do
   use TaskManagementWeb, :controller
 
+  alias TaskManagement.EtsRepo.TaskEts
   alias TaskManagement.TaskList
   alias TaskManagement.TaskList.Task
 
   action_fallback TaskManagementWeb.FallbackController
 
+  def list(conn, _params) do
+    tasks = TaskList.list_tasks()
+    render(conn, "index.json", tasks: tasks)
+  end
+
   def index(conn, %{"user_id" => user_id}) do
-    tasks = TaskList.list_task_from_user(user_id)
+    tasks = TaskEts.get_tasks_for_user(String.to_integer(user_id))
     render(conn, :index, tasks: tasks)
   end
 

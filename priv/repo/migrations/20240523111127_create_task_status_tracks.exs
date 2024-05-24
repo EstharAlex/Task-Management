@@ -4,11 +4,11 @@ defmodule TaskManagement.Repo.Migrations.CreateTaskStatusTracks do
   def change do
     create table(:task_status_tracks) do
       add :status_change, :string
-      add :changed_datetime, :naive_datetime
+      add :changed_date, :date
       add :task_id, :integer
 
       timestamps(type: :utc_datetime)
     end
-    create index(:tasks, [:task_id])
+    create index(:task_status_tracks, [:task_id])
   end
 end

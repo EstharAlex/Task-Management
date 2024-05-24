@@ -12,7 +12,6 @@ defmodule TaskManagement.AccountFixtures do
       attrs
       |> Enum.into(%{
         password: "some password",
-        password_hash: "some password_hash",
         username: "some username"
       })
       |> TaskManagement.Account.create_user()

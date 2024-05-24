@@ -18,17 +18,40 @@ defmodule TaskManagement.EtsRepo.TaskEts do
     tasks = TaskList.list_tasks()
     grouped_tasks = group_tasks_by_user(tasks)
 
-    Enum.each(grouped_tasks, fn {user_id, list_of_task} ->
-      :ets.insert(__MODULE__, {user_id, list_of_task})
-    end)
+    :ets.insert(__MODULE__, grouped_tasks)
 
     {:ok, self()}
   end
 
   # Function to retrieve tasks for a user from ETS
   def get_tasks_for_user(user_id) do
-    :ets.lookup(__MODULE__, user_id)
+    case :ets.lookup(__MODULE__, user_id) do
+    [{_user_id, value}] -> value
+
+    emp_list -> emp_list
+    end
   end
+
+  # Function to add new task for a user from ETS
+ def add_new_tasks_for_user(user_id, task) do
+   tasks = get_tasks_for_user(user_id)
+   new_list = [task | tasks]
+   :ets.insert(__MODULE__, {user_id, new_list})
+ end
+
+  # Function to add new task for a user from ETS
+ def update_tasks_for_user(user_id, task) do
+   tasks = get_tasks_for_user(user_id)
+   updated_list =
+      Enum.map(tasks, fn x ->
+          if x.id == task.id do
+          task
+          else
+            x
+          end
+      end)
+    :ets.insert(__MODULE__, {user_id, updated_list})
+ end
 
   # Function to delete tasks for a user from ETS
   def delete_tasks_for_user(user_id) do
@@ -37,12 +60,15 @@ defmodule TaskManagement.EtsRepo.TaskEts do
 
   # Function to delete a specific task for a user from ETS
   def delete_task_for_user(user_id, task_id) do
-    :ets.update_counter(__MODULE__, user_id, {task_id, -1})
+    tasks = get_tasks_for_user(user_id)
+    new_list = Enum.reject(tasks, fn x -> x.id == task_id end)
+    :ets.insert(__MODULE__, {user_id, new_list})
   end
 
   # Function to group tasks by user ID
   def group_tasks_by_user(tasks) do
     Enum.group_by(tasks, &(&1.user_id))
+    |> Enum.into([])
   end
 
 end

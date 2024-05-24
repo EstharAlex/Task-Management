@@ -9,13 +9,15 @@ defmodule TaskManagementWeb.TaskControllerTest do
     status: "some status",
     description: "some description",
     title: "some title",
-    due_date: ~D[2024-05-22]
+    due_date: ~D[2024-05-22],
+    user_id: 1
   }
   @update_attrs %{
     status: "some updated status",
     description: "some updated description",
     title: "some updated title",
-    due_date: ~D[2024-05-23]
+    due_date: ~D[2024-05-23],
+    user_id: 1
   }
   @invalid_attrs %{status: nil, description: nil, title: nil, due_date: nil}
 
@@ -42,7 +44,8 @@ defmodule TaskManagementWeb.TaskControllerTest do
                "description" => "some description",
                "due_date" => "2024-05-22",
                "status" => "some status",
-               "title" => "some title"
+               "title" => "some title",
+               "user_id" => 1
              } = json_response(conn, 200)["data"]
     end
 
@@ -66,7 +69,8 @@ defmodule TaskManagementWeb.TaskControllerTest do
                "description" => "some updated description",
                "due_date" => "2024-05-23",
                "status" => "some updated status",
-               "title" => "some updated title"
+               "title" => "some updated title",
+               "user_id" => 1
              } = json_response(conn, 200)["data"]
     end
 
@@ -91,6 +95,7 @@ defmodule TaskManagementWeb.TaskControllerTest do
 
   defp create_task(_) do
     task = task_fixture()
+
     %{task: task}
   end
 end

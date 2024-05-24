@@ -8,12 +8,10 @@ defmodule TaskManagementWeb.UserControllerTest do
   @create_attrs %{
     username: "some username",
     password: "some password",
-    password_hash: "some password_hash"
   }
   @update_attrs %{
     username: "some updated username",
     password: "some updated password",
-    password_hash: "some updated password_hash"
   }
   @invalid_attrs %{username: nil, password: nil, password_hash: nil}
 
@@ -38,7 +36,6 @@ defmodule TaskManagementWeb.UserControllerTest do
       assert %{
                "id" => ^id,
                "password" => "some password",
-               "password_hash" => "some password_hash",
                "username" => "some username"
              } = json_response(conn, 200)["data"]
     end
@@ -61,7 +58,6 @@ defmodule TaskManagementWeb.UserControllerTest do
       assert %{
                "id" => ^id,
                "password" => "some updated password",
-               "password_hash" => "some updated password_hash",
                "username" => "some updated username"
              } = json_response(conn, 200)["data"]
     end

@@ -7,21 +7,21 @@ defmodule TaskManagementWeb.TaskStatusTrackControllerTest do
 
   @create_attrs %{
     status_change: "some status_change",
-    changed_datetime: ~N[2024-05-22 11:11:00],
+    changed_date: ~D[2024-05-22],
     task_id: 42
   }
   @update_attrs %{
     status_change: "some updated status_change",
-    changed_datetime: ~N[2024-05-23 11:11:00],
+    changed_date: ~D[2024-05-23],
     task_id: 43
   }
-  @invalid_attrs %{status_change: nil, changed_datetime: nil, task_id: nil}
+  @invalid_attrs %{status_change: nil, changed_date: nil, task_id: nil}
 
   setup %{conn: conn} do
     {:ok, conn: put_req_header(conn, "accept", "application/json")}
   end
 
-  describe "index" do
+  describe "list" do
     test "lists all task_status_tracks", %{conn: conn} do
       conn = get(conn, ~p"/api/task_status_tracks")
       assert json_response(conn, 200)["data"] == []
@@ -37,7 +37,7 @@ defmodule TaskManagementWeb.TaskStatusTrackControllerTest do
 
       assert %{
                "id" => ^id,
-               "changed_datetime" => "2024-05-22T11:11:00",
+               "changed_date" => "2024-05-22",
                "status_change" => "some status_change",
                "task_id" => 42
              } = json_response(conn, 200)["data"]
@@ -60,7 +60,7 @@ defmodule TaskManagementWeb.TaskStatusTrackControllerTest do
 
       assert %{
                "id" => ^id,
-               "changed_datetime" => "2024-05-23T11:11:00",
+               "changed_date" => "2024-05-23",
                "status_change" => "some updated status_change",
                "task_id" => 43
              } = json_response(conn, 200)["data"]

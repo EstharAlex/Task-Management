@@ -13,8 +13,9 @@ defmodule TaskManagement.TaskListFixtures do
       |> Enum.into(%{
         description: "some description",
         due_date: ~D[2024-05-22],
-        status: "some status",
-        title: "some title"
+        status: "TO DO",
+        title: "some title",
+        user_id: 1
       })
       |> TaskManagement.TaskList.create_task()
 
@@ -28,7 +29,7 @@ defmodule TaskManagement.TaskListFixtures do
     {:ok, task_status_track} =
       attrs
       |> Enum.into(%{
-        changed_datetime: ~N[2024-05-22 11:11:00],
+        changed_date: ~D[2024-05-22],
         status_change: "some status_change",
         task_id: 42
       })

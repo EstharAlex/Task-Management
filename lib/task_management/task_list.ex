@@ -6,7 +6,7 @@ defmodule TaskManagement.TaskList do
   import Ecto.Query, warn: false
   alias TaskManagement.Repo
   # alias TaskManagement.Account.User
-
+  alias TaskManagement.EtsRepo.TaskEts
   alias TaskManagement.TaskList.{Task, TaskStatusTrack}
 
   @doc """
@@ -62,6 +62,7 @@ defmodule TaskManagement.TaskList do
     |> Repo.insert()
     |> case do
       {:ok, task} ->
+        TaskEts.add_new_tasks_for_user(task.user_id, task)
         status_track_for_task(task)
         {:ok, task}
 
@@ -87,6 +88,7 @@ defmodule TaskManagement.TaskList do
     |> Repo.update()
     |> case do
       {:ok, task} ->
+        TaskEts.update_tasks_for_user(task.user_id, task)
         status_track_for_task(task)
         {:ok, task}
 
@@ -107,6 +109,7 @@ defmodule TaskManagement.TaskList do
 
   """
   def delete_task(%Task{} = task) do
+    TaskEts.delete_task_for_user(task.user_id, task.id)
     Repo.delete(task)
   end
 
@@ -134,11 +137,11 @@ defmodule TaskManagement.TaskList do
       [%TaskStatusTrack{}, ...]
 
   """
-  # def list_task_status_tracks do
-  #   Repo.all(TaskStatusTrack)
-  # end
+  def list_task_status_tracks do
+    Repo.all(TaskStatusTrack)
+  end
 
-  def list_task_status_tracks(task_id) do
+  def list_task_status_track(task_id) do
     from(tst in TaskStatusTrack, where: tst.task_id == ^task_id)
     |> Repo.all()
   end
@@ -146,7 +149,7 @@ defmodule TaskManagement.TaskList do
   defp status_track_for_task(%Task{id: task_id, status: status_change}) do
     %TaskStatusTrack{
       status_change: status_change,
-      changed_datetime: NaiveDateTime.utc_now(),
+      changed_date: Date.utc_today(),
       task_id: task_id
     }
     |> TaskStatusTrack.changeset(%{})

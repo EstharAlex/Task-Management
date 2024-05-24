@@ -19,7 +19,7 @@ defmodule TaskManagementWeb.TaskStatusTrackJSON do
     %{
       id: task_status_track.id,
       status_change: task_status_track.status_change,
-      changed_datetime: task_status_track.changed_datetime,
+      changed_date: task_status_track.changed_date,
       task_id: task_status_track.task_id
     }
   end

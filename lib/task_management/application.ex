@@ -14,6 +14,8 @@ defmodule TaskManagement.Application do
       {Phoenix.PubSub, name: TaskManagement.PubSub},
       # Start the Finch HTTP client for sending emails
       {Finch, name: TaskManagement.Finch},
+      #Task ETS
+      TaskManagement.EtsRepo.TaskEts,
       # Start a worker by calling: TaskManagement.Worker.start_link(arg)
       # {TaskManagement.Worker, arg},
       # Start to serve requests, typically the last entry
